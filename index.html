@@ -143,12 +143,12 @@
    puedas probarla igual sin configurar nada.
    ========================================================================= */
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  projectId: "YOUR_PROJECT",
-  storageBucket: "YOUR_PROJECT.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyBLCFkrsPyoO__flolqOmVrfcpgLyzszxA",
+  authDomain: "app-estudio-9a922.firebaseapp.com",
+  projectId: "app-estudio-9a922",
+  storageBucket: "app-estudio-9a922.firebasestorage.app",
+  messagingSenderId: "3394650754",
+  appId: "1:3394650754:web:92142a0291586ed6d72a9b"
 };
 
 const isFirebaseConfigured = firebaseConfig.apiKey && !firebaseConfig.apiKey.startsWith("YOUR_");
@@ -157,8 +157,8 @@ let fs = null; // firestore module functions
 
 if (isFirebaseConfigured) {
   try {
-    const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
-    fs = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+    const { initializeApp } = await import("https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js");
+    fs = await import("https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js");
     const app = initializeApp(firebaseConfig);
     db = fs.getFirestore(app);
   } catch (e) {
