@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Cuatrimestre · Cursada & Finales</title>
+
+<!-- Tailwind CSS (Play CDN) -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- Google Fonts: Montserrat (títulos) + Roboto (cuerpo) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --paper:#F7F7F4;
+    --surface:#FFFFFF;
+    --border:#E7E5E0;
+    --ink:#1C1E21;
+    --ink-muted:#6B6F76;
+    --accent:#2D6A6A;
+    --accent-dark:#204d4d;
+  }
+  *{ -webkit-tap-highlight-color: transparent; }
+  html,body{ background:var(--paper); color:var(--ink); font-family:'Roboto',sans-serif; }
+  h1,h2,h3,h4,.font-display{ font-family:'Montserrat',sans-serif; }
+  ::-webkit-scrollbar{ height:6px; width:6px; }
+  ::-webkit-scrollbar-thumb{ background:#D8D5CE; border-radius:99px; }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:0.01ms !important; transition-duration:0.01ms !important; }
+  }
+
+  button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible, textarea:focus-visible{
+    outline: 2px solid var(--accent); outline-offset: 2px; border-radius:4px;
+  }
+
+  .card{ background:var(--surface); border:1px solid var(--border); border-radius:14px; }
+
+  /* Signature element: boarding-pass style ticket for countdowns */
+  .ticket{ position:relative; display:flex; background:var(--surface); border:1px solid var(--border); border-radius:14px; overflow:hidden; }
+  .ticket-main{ flex:1; padding:14px 16px; min-width:0; }
+  .ticket-stub{ width:84px; flex-shrink:0; border-left:2px dashed #D8D5CE; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:8px 4px; text-align:center; }
+  .ticket::before, .ticket::after{
+    content:''; position:absolute; width:16px; height:16px; background:var(--paper);
+    border-radius:50%; top:50%; transform:translateY(-50%); right:84px; margin-right:-8px; z-index:2;
+  }
+  .ticket::before{ top:-8px; }
+  .ticket::after{ bottom:-8px; top:auto; }
+
+  .badge{ display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:700; letter-spacing:.02em; padding:3px 9px; border-radius:99px; text-transform:uppercase; }
+  .dot{ width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+
+  .input-field{ width:100%; background:var(--paper); border:1px solid var(--border); border-radius:9px; padding:9px 12px; font-size:14px; color:var(--ink); }
+  .input-field:focus{ background:var(--surface); }
+  label.field-label{ font-size:12px; font-weight:700; color:var(--ink-muted); text-transform:uppercase; letter-spacing:.03em; margin-bottom:4px; display:block; }
+
+  .btn-primary{ background:var(--accent); color:#fff; font-weight:600; border-radius:10px; padding:10px 16px; font-size:14px; transition:background .15s; }
+  .btn-primary:hover{ background:var(--accent-dark); }
+  .btn-ghost{ background:transparent; border:1px solid var(--border); color:var(--ink); font-weight:600; border-radius:10px; padding:10px 16px; font-size:14px; }
+  .btn-ghost:hover{ background:#F0EFEB; }
+  .icon-btn{ width:32px; height:32px; display:inline-flex; align-items:center; justify-content:center; border-radius:8px; color:var(--ink-muted); }
+  .icon-btn:hover{ background:#F0EFEB; color:var(--ink); }
+
+  .nav-item{ display:flex; align-items:center; gap:10px; padding:10px 14px; border-radius:10px; color:var(--ink-muted); font-weight:600; font-size:14px; }
+  .nav-item.active{ background:#EAF2F1; color:var(--accent-dark); }
+  .nav-item:hover:not(.active){ background:#F0EFEB; }
+
+  .bottom-nav-item{ display:flex; flex-direction:column; align-items:center; gap:2px; padding:6px 0; flex:1; color:var(--ink-muted); font-size:11px; font-weight:600; }
+  .bottom-nav-item.active{ color:var(--accent-dark); }
+
+  .progress-track{ background:#EDECE7; border-radius:99px; height:8px; overflow:hidden; }
+  .progress-fill{ height:100%; border-radius:99px; transition:width .4s ease; }
+
+  .modal-backdrop{ background:rgba(20,20,18,.45); backdrop-filter: blur(1px); }
+  .modal-panel{ background:var(--surface); border-radius:18px; max-height:88vh; overflow-y:auto; }
+
+  .fade-in{ animation: fadeIn .18s ease; }
+  @keyframes fadeIn{ from{ opacity:0; transform:translateY(6px);} to{ opacity:1; transform:translateY(0);} }
+
+  .day-tab{ padding:8px 16px; border-radius:10px; font-weight:700; font-size:13px; color:var(--ink-muted); border:1px solid transparent; }
+  .day-tab.active{ background:var(--surface); border-color:var(--border); color:var(--ink); box-shadow:0 1px 2px rgba(0,0,0,.04); }
+
+  select.input-field{ appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236B6F76' stroke-width='1.5' fill='none' fill-rule='evenodd'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 12px center; padding-right:32px; }
+</style>
+</head>
+<body class="pb-20 md:pb-0">
+
+<div id="setup-banner" class="hidden fixed top-0 inset-x-0 z-40 bg-[#F2A541] text-[#1C1E21] text-xs font-medium px-4 py-2 flex items-center justify-between gap-3">
+  <span>⚠️ Firebase no está configurado: estás trabajando en modo local (los datos se guardan solo en este navegador). Completá <code class="font-mono">firebaseConfig</code> en el código para sincronizar en la nube.</span>
+  <button onclick="document.getElementById('setup-banner').classList.add('hidden')" class="font-bold px-2">✕</button>
+</div>
+
+<div class="max-w-7xl mx-auto md:flex md:min-h-screen">
+
+  <!-- Sidebar (desktop) -->
+  <aside class="hidden md:flex md:w-60 md:flex-col md:border-r md:border-[var(--border)] md:sticky md:top-0 md:h-screen px-4 py-6 gap-6 flex-shrink-0">
+    <div class="flex items-center gap-2 px-2">
+      <div class="w-9 h-9 rounded-[10px] bg-[var(--accent)] text-white font-display font-bold flex items-center justify-center text-sm">C4</div>
+      <div>
+        <p class="font-display font-bold text-[15px] leading-tight">Mi Cuatrimestre</p>
+        <p class="text-[11px] text-[var(--ink-muted)]">Cursada &amp; Finales</p>
+      </div>
+    </div>
+    <nav class="flex flex-col gap-1" id="sidebar-nav">
+      <button data-view="dashboard" class="nav-item"><span>📊</span> Dashboard</button>
+      <button data-view="cursada" class="nav-item"><span>📅</span> Vista Cursada</button>
+      <button data-view="finales" class="nav-item"><span>🎓</span> Modo Finales</button>
+    </nav>
+    <div class="mt-auto text-[11px] text-[var(--ink-muted)] px-2 leading-relaxed">
+      Los datos se sincronizan en tiempo real vía Firebase. Configurá tus credenciales en el código para activarlo en la nube.
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div class="flex-1 min-w-0">
+    <header class="md:hidden sticky top-0 z-30 bg-[var(--paper)]/90 backdrop-blur border-b border-[var(--border)] px-4 py-3 flex items-center gap-2">
+      <div class="w-8 h-8 rounded-[9px] bg-[var(--accent)] text-white font-display font-bold flex items-center justify-center text-xs">C4</div>
+      <p class="font-display font-bold text-[15px]">Mi Cuatrimestre</p>
+    </header>
+
+    <main id="main-content" class="px-4 md:px-8 py-6 md:py-8"></main>
+  </div>
+</div>
+
+<!-- Bottom nav (mobile) -->
+<nav class="md:hidden fixed bottom-0 inset-x-0 z-30 bg-[var(--surface)] border-t border-[var(--border)] flex px-2" id="bottom-nav" style="padding-bottom: env(safe-area-inset-bottom);">
+  <button data-view="dashboard" class="bottom-nav-item"><span class="text-lg">📊</span>Dashboard</button>
+  <button data-view="cursada" class="bottom-nav-item"><span class="text-lg">📅</span>Cursada</button>
+  <button data-view="finales" class="bottom-nav-item"><span class="text-lg">🎓</span>Finales</button>
+</nav>
+
+<div id="modal-root"></div>
+
+<script type="module">
+/* =========================================================================
+   FIREBASE SETUP
+   Reemplazá este objeto con la config de tu proyecto (Firebase Console →
+   Configuración del proyecto → Tus apps → SDK setup). Mientras quede el
+   placeholder, la app funciona 100% en modo local (localStorage) para que
+   puedas probarla igual sin configurar nada.
+   ========================================================================= */
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT",
+  storageBucket: "YOUR_PROJECT.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
+
+const isFirebaseConfigured = firebaseConfig.apiKey && !firebaseConfig.apiKey.startsWith("YOUR_");
+let db = null;
+let fs = null; // firestore module functions
+
+if (isFirebaseConfigured) {
+  try {
+    const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
+    fs = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+    const app = initializeApp(firebaseConfig);
+    db = fs.getFirestore(app);
+  } catch (e) {
+    console.warn("No se pudo inicializar Firebase, se usa modo local.", e);
+  }
+}
+if (!db) document.getElementById('setup-banner').classList.remove('hidden');
+
+/* =========================================================================
+   BACKEND ABSTRACTION
+   Misma interfaz para Firestore o localStorage, así el resto del código
+   no necesita saber cuál está activo.
+   ========================================================================= */
+const COLLECTIONS = ['materias', 'clases', 'finales', 'unidades'];
+const LS_PREFIX = 'cuatri_';
+const listeners = {};
+
+function lsGet(name){ return JSON.parse(localStorage.getItem(LS_PREFIX + name) || '[]'); }
+function lsSet(name, arr){ localStorage.setItem(LS_PREFIX + name, JSON.stringify(arr)); (listeners[name]||[]).forEach(cb => cb(arr)); }
+function uid(){ return 'id_' + Math.random().toString(36).slice(2, 10) + Date.now().toString(36); }
+
+const Backend = {
+  subscribe(name, cb){
+    if (db) {
+      const colRef = fs.collection(db, name);
+      return fs.onSnapshot(colRef, snap => {
+        const arr = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        cb(arr);
+      });
+    } else {
+      listeners[name] = listeners[name] || [];
+      listeners[name].push(cb);
+      cb(lsGet(name));
+      return () => { listeners[name] = listeners[name].filter(f => f !== cb); };
+    }
+  },
+  async add(name, data){
+    if (db) {
+      await fs.addDoc(fs.collection(db, name), data);
+    } else {
+      const arr = lsGet(name);
+      arr.push({ id: uid(), ...data });
+      lsSet(name, arr);
+    }
+  },
+  async set(name, id, data){
+    if (db) {
+      await fs.setDoc(fs.doc(db, name, id), data);
+    } else {
+      const arr = lsGet(name);
+      arr.push({ id, ...data });
+      lsSet(name, arr);
+    }
+  },
+  async update(name, id, data){
+    if (db) {
+      await fs.updateDoc(fs.doc(db, name, id), data);
+    } else {
+      const arr = lsGet(name).map(item => item.id === id ? { ...item, ...data } : item);
+      lsSet(name, arr);
+    }
+  },
+  async remove(name, id){
+    if (db) {
+      await fs.deleteDoc(fs.doc(db, name, id));
+    } else {
+      lsSet(name, lsGet(name).filter(item => item.id !== id));
+    }
+  }
+};
+
+/* =========================================================================
+   STATE
+   ========================================================================= */
+const state = { materias: [], clases: [], finales: [], unidades: [], view: 'dashboard', cursadaDay: null };
+
+const SUBJECT_COLORS = ['#E4572E', '#2D6A6A', '#F2A541', '#6C5CE7', '#2E86AB', '#6A9955'];
+const FINAL_COLORS   = ['#D93025', '#C2410C', '#A16207', '#7C3AED', '#0E7490', '#15803D'];
+const PRIORITY_COLOR = { Alta: '#D93025', Media: '#F2A541', Baja: '#2D6A6A' };
+const CLASE_ESTADOS = ['Pendiente', 'Cursada', 'Resumida', 'Repasada'];
+const UNIDAD_ESTADOS = ['Sin empezar', 'Leído', 'Resumido', 'Practicado', 'Dominado'];
+const DIAS = ['Lunes', 'Miércoles', 'Viernes'];
+
+/* =========================================================================
+   SEED DATA (solo si las colecciones están vacías — primera carga)
+   ========================================================================= */
+async function seedIfEmpty(){
+  if (state.materias.length === 0) {
+    const nombres = ['Materia Lunes 1','Materia Lunes 2','Materia Miércoles 1','Materia Miércoles 2','Materia Viernes 1','Materia Viernes 2'];
+    const dias = ['Lunes','Lunes','Miércoles','Miércoles','Viernes','Viernes'];
+    const turnos = [1,2,1,2,1,2];
+    for (let i = 0; i < 6; i++){
+      await Backend.add('materias', { nombre: nombres[i], dia: dias[i], turno: turnos[i], color: SUBJECT_COLORS[i], campusUrl: '' });
+    }
+  }
+  if (state.finales.length === 0) {
+    const nombres = ['Final 1','Final 2','Final 3','Final 4','Final 5','Final 6'];
+    const fechas = ['2026-12-02','2026-12-09','2026-12-14','2026-12-16','2026-12-21','2026-12-23'];
+    for (let i = 0; i < 6; i++){
+      await Backend.add('finales', { nombreMateria: nombres[i], fechaExamen: fechas[i], prioridad: 'Media', color: FINAL_COLORS[i] });
+    }
+  }
+}
+
+let seeded = false;
+let pendingRenders = 0;
+function afterLoad(){
+  pendingRenders++;
+  if (pendingRenders >= 4 && !seeded){
+    seeded = true;
+    seedIfEmpty().then(render);
+  }
+  render();
+}
+
+Backend.subscribe('materias', arr => { state.materias = arr.sort((a,b)=> (a.turno||0)-(b.turno||0)); afterLoad(); });
+Backend.subscribe('clases',   arr => { state.clases   = arr.sort((a,b)=> (a.numeroClase||0)-(b.numeroClase||0)); afterLoad(); });
+Backend.subscribe('finales',  arr => { state.finales  = arr.sort((a,b)=> new Date(a.fechaExamen||0) - new Date(b.fechaExamen||0)); afterLoad(); });
+Backend.subscribe('unidades', arr => { state.unidades = arr.sort((a,b)=> (a.unidadNumero||0)-(b.unidadNumero||0)); afterLoad(); });
+
+/* =========================================================================
+   HELPERS
+   ========================================================================= */
+function esc(str){ return (str ?? '').toString().replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+function todayName(){
+  const map = {1:'Lunes', 3:'Miércoles', 5:'Viernes'};
+  return map[new Date().getDay()] || null;
+}
+function daysUntil(dateStr){
+  if (!dateStr) return null;
+  const today = new Date(); today.setHours(0,0,0,0);
+  const target = new Date(dateStr + 'T00:00:00');
+  return Math.round((target - today) / 86400000);
+}
+function fmtDate(dateStr){
+  if (!dateStr) return 'Sin fecha';
+  const d = new Date(dateStr + 'T00:00:00');
+  return d.toLocaleDateString('es-AR', { day:'2-digit', month:'short', year:'numeric' });
+}
+function claseStatusColor(estado){
+  return { Pendiente:'#9AA0A6', Cursada:'#2E86AB', Resumida:'#F2A541', Repasada:'#2D6A6A' }[estado] || '#9AA0A6';
+}
+function unidadStatusColor(estado){
+  return { 'Sin empezar':'#9AA0A6', 'Leído':'#2E86AB', 'Resumido':'#F2A541', 'Practicado':'#6C5CE7', 'Dominado':'#2D6A6A' }[estado] || '#9AA0A6';
+}
+function badge(text, color){
+  return `<span class="badge" style="background:${color}1A; color:${color};"><span class="dot" style="background:${color}"></span>${esc(text)}</span>`;
+}
+function linkBtn(label, url, icon){
+  if (!url) return `<span class="text-xs text-[var(--ink-muted)] px-3 py-2 rounded-[9px] border border-dashed border-[var(--border)] inline-flex items-center gap-1">${icon} ${label} sin link</span>`;
+  return `<a href="${esc(url)}" target="_blank" rel="noopener" class="text-xs font-semibold px-3 py-2 rounded-[9px] border border-[var(--border)] inline-flex items-center gap-1 hover:bg-[#F0EFEB]">${icon} ${label}</a>`;
+}
+function progressBar(pct, color){
+  return `<div class="progress-track"><div class="progress-fill" style="width:${Math.max(0,Math.min(100,pct))}%; background:${color}"></div></div>`;
+}
+
+/* =========================================================================
+   NAVIGATION
+   ========================================================================= */
+function setView(view){
+  state.view = view;
+  document.querySelectorAll('[data-view]').forEach(el => el.classList.toggle('active', el.dataset.view === view));
+  render();
+}
+document.querySelectorAll('#sidebar-nav [data-view], #bottom-nav [data-view]').forEach(btn => {
+  btn.addEventListener('click', () => setView(btn.dataset.view));
+});
+
+/* =========================================================================
+   MODAL SYSTEM
+   ========================================================================= */
+function openModal(innerHtml){
+  const root = document.getElementById('modal-root');
+  root.innerHTML = `
+    <div class="fixed inset-0 z-50 modal-backdrop flex items-end md:items-center justify-center p-0 md:p-4" id="modal-backdrop">
+      <div class="modal-panel fade-in w-full md:max-w-md rounded-b-none md:rounded-b-[18px] rounded-t-[18px]">
+        ${innerHtml}
+      </div>
+    </div>`;
+  document.getElementById('modal-backdrop').addEventListener('click', e => { if (e.target.id === 'modal-backdrop') closeModal(); });
+}
+function closeModal(){ document.getElementById('modal-root').innerHTML = ''; }
+window.closeModal = closeModal;
+
+/* =========================================================================
+   RENDER: DASHBOARD
+   ========================================================================= */
+function renderDashboard(){
+  const day = todayName();
+  const hoyMaterias = day ? state.materias.filter(m => m.dia === day) : [];
+
+  const materiasHtml = hoyMaterias.length ? hoyMaterias.map(m => {
+    const clasesM = state.clases.filter(c => c.materiaId === m.id).sort((a,b)=> (b.numeroClase||0)-(a.numeroClase||0));
+    const ultima = clasesM[0];
+    return `
+    <div class="card p-4 flex flex-col gap-3">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2 min-w-0">
+          <span class="dot" style="background:${m.color}; width:10px; height:10px;"></span>
+          <p class="font-display font-bold text-[15px] truncate">${esc(m.nombre)}</p>
+        </div>
+        <span class="text-[11px] font-bold text-[var(--ink-muted)]">Turno ${m.turno}</span>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        ${linkBtn('Grabación', ultima?.linkGrabacion, '🎥')}
+        ${linkBtn('Read AI', ultima?.linkReadAI, '🤖')}
+        ${linkBtn('Campus', m.campusUrl, '🏫')}
+      </div>
+    </div>`;
+  }).join('') : `<div class="card p-6 text-center text-sm text-[var(--ink-muted)]">${day ? 'No hay materias cargadas para hoy.' : 'Hoy no tenés cursada (Lunes / Miércoles / Viernes). ¡Aprovechá para repasar finales! 🎓'}</div>`;
+
+  const finalesOrdenados = [...state.finales].sort((a,b)=> daysUntil(a.fechaExamen) - daysUntil(b.fechaExamen));
+  const ticketsHtml = finalesOrdenados.map(f => {
+    const d = daysUntil(f.fechaExamen);
+    const dLabel = d === null ? '—' : d < 0 ? 'Rendido' : d === 0 ? 'HOY' : d;
+    const dSub = d === null ? '' : d < 0 ? '' : d === 1 ? 'día' : 'días';
+    return `
+    <div class="ticket flex-shrink-0 w-64 md:w-auto">
+      <div class="ticket-main">
+        <p class="text-[11px] font-bold uppercase tracking-wide" style="color:${f.color}">${esc(f.prioridad || 'Media')} prioridad</p>
+        <p class="font-display font-bold text-[15px] truncate mt-0.5">${esc(f.nombreMateria)}</p>
+        <p class="text-xs text-[var(--ink-muted)] mt-1">${fmtDate(f.fechaExamen)}</p>
+      </div>
+      <div class="ticket-stub">
+        <p class="font-display font-extrabold text-2xl leading-none" style="color:${f.color}">${dLabel}</p>
+        <p class="text-[10px] font-bold text-[var(--ink-muted)] uppercase">${dSub}</p>
+      </div>
+    </div>`;
+  }).join('');
+
+  const totalClases = state.clases.length;
+  const clasesOk = state.clases.filter(c => ['Resumida','Repasada'].includes(c.estado)).length;
+  const pctClases = totalClases ? Math.round((clasesOk/totalClases)*100) : 0;
+
+  const totalUnidades = state.unidades.length;
+  const unidadesOk = state.unidades.filter(u => u.estado === 'Dominado').length;
+  const pctUnidades = totalUnidades ? Math.round((unidadesOk/totalUnidades)*100) : 0;
+
+  return `
+  <div class="fade-in flex flex-col gap-8">
+    <div>
+      <p class="text-xs font-bold uppercase tracking-wide text-[var(--ink-muted)]">${day ? 'Hoy · ' + day : 'Hoy'}</p>
+      <h1 class="font-display font-extrabold text-2xl md:text-3xl">Dashboard</h1>
+    </div>
+
+    <section>
+      <h2 class="font-display font-bold text-sm uppercase tracking-wide text-[var(--ink-muted)] mb-3">Materias de hoy</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">${materiasHtml}</div>
+    </section>
+
+    <section>
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="font-display font-bold text-sm uppercase tracking-wide text-[var(--ink-muted)]">Cuenta regresiva · Finales</h2>
+      </div>
+      <div class="flex md:grid md:grid-cols-3 gap-3 overflow-x-auto pb-2 -mx-1 px-1">${ticketsHtml || '<p class="text-sm text-[var(--ink-muted)]">Sin finales cargados.</p>'}</div>
+    </section>
+
+    <section class="grid grid-cols-1 md:grid-cols-2 gap-3">
+      <div class="card p-5">
+        <div class="flex items-center justify-between mb-2">
+          <p class="font-display font-bold text-sm">Progreso de cursada</p>
+          <p class="font-display font-extrabold" style="color:var(--accent)">${pctClases}%</p>
+        </div>
+        ${progressBar(pctClases, 'var(--accent)')}
+        <p class="text-xs text-[var(--ink-muted)] mt-2">${clasesOk} de ${totalClases} clases resumidas o repasadas</p>
+      </div>
+      <div class="card p-5">
+        <div class="flex items-center justify-between mb-2">
+          <p class="font-display font-bold text-sm">Cobertura de finales</p>
+          <p class="font-display font-extrabold" style="color:#7C3AED">${pctUnidades}%</p>
+        </div>
+        ${progressBar(pctUnidades, '#7C3AED')}
+        <p class="text-xs text-[var(--ink-muted)] mt-2">${unidadesOk} de ${totalUnidades} unidades dominadas</p>
+      </div>
+    </section>
+  </div>`;
+}
+
+/* =========================================================================
+   RENDER: CURSADA
+   ========================================================================= */
+function renderCursada(){
+  if (!state.cursadaDay) state.cursadaDay = todayName() || 'Lunes';
+  const day = state.cursadaDay;
+  const materiasDia = state.materias.filter(m => m.dia === day).sort((a,b)=>a.turno-b.turno);
+
+  const tabsHtml = DIAS.map(d => `<button data-day="${d}" class="day-tab ${d===day?'active':''}">${d}</button>`).join('');
+
+  const materiasHtml = materiasDia.map(m => {
+    const clasesM = state.clases.filter(c => c.materiaId === m.id).sort((a,b)=>(a.numeroClase||0)-(b.numeroClase||0));
+    const clasesHtml = clasesM.map(c => renderClaseRow(c)).join('') || `<p class="text-sm text-[var(--ink-muted)] py-3">Todavía no cargaste clases.</p>`;
+    return `
+    <div class="card p-4 md:p-5 flex flex-col gap-3">
+      <div class="flex items-center justify-between gap-2">
+        <div class="flex items-center gap-2 min-w-0">
+          <span class="dot" style="background:${m.color}; width:12px; height:12px;"></span>
+          <div class="min-w-0">
+            <p class="font-display font-bold text-base truncate">${esc(m.nombre)}</p>
+            <p class="text-[11px] text-[var(--ink-muted)]">Turno ${m.turno} · ${day}</p>
+          </div>
+        </div>
+        <button class="icon-btn" onclick="openEditMateria('${m.id}')" title="Editar materia">✏️</button>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        ${linkBtn('Campus', m.campusUrl, '🏫')}
+      </div>
+      <div class="divide-y divide-[var(--border)]">${clasesHtml}</div>
+      <button class="btn-ghost self-start" onclick="openAddClase('${m.id}')">+ Nueva clase</button>
+    </div>`;
+  }).join('') || `<p class="text-sm text-[var(--ink-muted)]">No hay materias configuradas para ${day}.</p>`;
+
+  return `
+  <div class="fade-in flex flex-col gap-6">
+    <div>
+      <p class="text-xs font-bold uppercase tracking-wide text-[var(--ink-muted)]">Cursada</p>
+      <h1 class="font-display font-extrabold text-2xl md:text-3xl">Gestor semanal</h1>
+    </div>
+    <div class="flex gap-2 bg-[#F0EFEB] p-1 rounded-[12px] w-fit">${tabsHtml}</div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">${materiasHtml}</div>
+  </div>`;
+}
+
+function renderClaseRow(c){
+  const color = claseStatusColor(c.estado);
+  const tareas = c.tareas || {};
+  return `
+  <details class="py-3 group">
+    <summary class="flex items-center justify-between gap-2 cursor-pointer list-none">
+      <div class="min-w-0 flex items-center gap-2">
+        <span class="font-display font-bold text-sm flex-shrink-0">#${esc(c.numeroClase ?? '-')}</span>
+        <span class="text-sm truncate">${esc(c.tema || 'Sin tema')}</span>
+      </div>
+      <div class="flex items-center gap-2 flex-shrink-0">
+        ${badge(c.estado || 'Pendiente', color)}
+        <span class="text-[var(--ink-muted)] text-xs transition-transform group-open:rotate-180">▾</span>
+      </div>
+    </summary>
+    <div class="mt-3 pl-1 flex flex-col gap-3">
+      <p class="text-xs text-[var(--ink-muted)]">${fmtDate(c.fecha)}</p>
+      <div class="flex flex-wrap gap-2">
+        ${linkBtn('Grabación', c.linkGrabacion, '🎥')}
+        ${linkBtn('Read AI', c.linkReadAI, '🤖')}
+      </div>
+      ${c.resumen ? `<p class="text-sm bg-[var(--paper)] rounded-[9px] p-3 border border-[var(--border)]">${esc(c.resumen)}</p>` : ''}
+      <div class="flex flex-col gap-1.5">
+        ${['verGrabacion','procesarReadAI','hacerTP'].map((k,i) => {
+          const labels = { verGrabacion:'Ver grabación', procesarReadAI:'Procesar Read AI', hacerTP:'Hacer TP' };
+          return `<label class="flex items-center gap-2 text-sm">
+            <input type="checkbox" ${tareas[k] ? 'checked' : ''} onchange="toggleTarea('${c.id}','${k}',this.checked)" class="w-4 h-4 rounded accent-[var(--accent)]">
+            ${labels[k]}
+          </label>`;
+        }).join('')}
+      </div>
+      <div class="flex items-center justify-between gap-2 pt-1">
+        <select class="input-field w-auto text-xs py-1.5" onchange="updateClaseEstado('${c.id}', this.value)">
+          ${CLASE_ESTADOS.map(e => `<option value="${e}" ${e===c.estado?'selected':''}>${e}</option>`).join('')}
+        </select>
+        <div class="flex gap-1">
+          <button class="icon-btn" onclick="openEditClase('${c.id}')" title="Editar">✏️</button>
+          <button class="icon-btn" onclick="confirmDeleteClase('${c.id}')" title="Eliminar">🗑️</button>
+        </div>
+      </div>
+    </div>
+  </details>`;
+}
+
+/* =========================================================================
+   RENDER: FINALES
+   ========================================================================= */
+function renderFinales(){
+  const cardsHtml = state.finales.map(f => {
+    const unidadesF = state.unidades.filter(u => u.finalId === f.id).sort((a,b)=>(a.unidadNumero||0)-(b.unidadNumero||0));
+    const total = unidadesF.length;
+    const dominadas = unidadesF.filter(u => u.estado === 'Dominado').length;
+    const pct = total ? Math.round((dominadas/total)*100) : 0;
+    const d = daysUntil(f.fechaExamen);
+
+    const unidadesHtml = unidadesF.map(u => `
+      <div class="flex items-center justify-between gap-2 py-2 border-b border-[var(--border)] last:border-0">
+        <div class="min-w-0 flex items-center gap-2">
+          <span class="font-display font-bold text-xs flex-shrink-0 text-[var(--ink-muted)]">U${esc(u.unidadNumero ?? '-')}</span>
+          <span class="text-sm truncate">${esc(u.titulo || 'Sin título')}</span>
+        </div>
+        <div class="flex items-center gap-1 flex-shrink-0">
+          <select class="input-field w-auto text-xs py-1" style="min-width:120px" onchange="updateUnidadEstado('${u.id}', this.value)">
+            ${UNIDAD_ESTADOS.map(e => `<option value="${e}" ${e===u.estado?'selected':''}>${e}</option>`).join('')}
+          </select>
+          <button class="icon-btn" onclick="confirmDeleteUnidad('${u.id}')" title="Eliminar">🗑️</button>
+        </div>
+      </div>`).join('') || `<p class="text-sm text-[var(--ink-muted)] py-2">Sin unidades cargadas todavía.</p>`;
+
+    return `
+    <div class="card p-4 md:p-5 flex flex-col gap-3" style="border-left:4px solid ${f.color}">
+      <div class="flex items-start justify-between gap-2">
+        <div class="min-w-0">
+          <p class="font-display font-bold text-base truncate">${esc(f.nombreMateria)}</p>
+          <p class="text-xs text-[var(--ink-muted)] mt-0.5">${fmtDate(f.fechaExamen)} ${d!==null ? '· ' + (d>=0 ? d+' días' : 'rendido') : ''}</p>
+        </div>
+        <div class="flex items-center gap-1 flex-shrink-0">
+          ${badge(f.prioridad || 'Media', PRIORITY_COLOR[f.prioridad] || '#9AA0A6')}
+          <button class="icon-btn" onclick="openEditFinal('${f.id}')" title="Editar">✏️</button>
+          <button class="icon-btn" onclick="confirmDeleteFinal('${f.id}')" title="Eliminar">🗑️</button>
+        </div>
+      </div>
+      <div>
+        <div class="flex items-center justify-between text-xs mb-1">
+          <span class="text-[var(--ink-muted)]">Repaso</span>
+          <span class="font-bold" style="color:${f.color}">${pct}%</span>
+        </div>
+        ${progressBar(pct, f.color)}
+      </div>
+      <details>
+        <summary class="text-sm font-semibold cursor-pointer text-[var(--accent-dark)]">Ver unidades (${total})</summary>
+        <div class="mt-2">${unidadesHtml}</div>
+        <button class="btn-ghost mt-2 text-xs" onclick="openAddUnidad('${f.id}')">+ Unidad</button>
+      </details>
+    </div>`;
+  }).join('') || `<p class="text-sm text-[var(--ink-muted)]">No hay finales cargados.</p>`;
+
+  return `
+  <div class="fade-in flex flex-col gap-6">
+    <div class="flex items-center justify-between gap-3 flex-wrap">
+      <div>
+        <p class="text-xs font-bold uppercase tracking-wide text-[var(--ink-muted)]">Meta Diciembre</p>
+        <h1 class="font-display font-extrabold text-2xl md:text-3xl">Modo Finales</h1>
+      </div>
+      <button class="btn-primary" onclick="openAddFinal()">+ Nuevo final</button>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">${cardsHtml}</div>
+  </div>`;
+}
+
+/* =========================================================================
+   MAIN RENDER
+   ========================================================================= */
+function render(){
+  document.querySelectorAll('[data-view]').forEach(el => el.classList.toggle('active', el.dataset.view === state.view));
+  const main = document.getElementById('main-content');
+  if (state.view === 'dashboard') main.innerHTML = renderDashboard();
+  else if (state.view === 'cursada') main.innerHTML = renderCursada();
+  else main.innerHTML = renderFinales();
+
+  main.querySelectorAll('[data-day]').forEach(btn => {
+    btn.addEventListener('click', () => { state.cursadaDay = btn.dataset.day; render(); });
+  });
+}
+
+/* =========================================================================
+   ACTIONS: CLASES
+   ========================================================================= */
+window.toggleTarea = async (claseId, key, val) => {
+  const c = state.clases.find(x => x.id === claseId);
+  const tareas = { ...(c?.tareas || {}), [key]: val };
+  await Backend.update('clases', claseId, { tareas });
+};
+window.updateClaseEstado = async (claseId, estado) => { await Backend.update('clases', claseId, { estado }); };
+window.confirmDeleteClase = async (claseId) => { if (confirm('¿Eliminar esta clase?')) await Backend.remove('clases', claseId); };
+
+window.openAddClase = (materiaId) => {
+  openModal(claseFormHtml({ materiaId }));
+};
+window.openEditClase = (claseId) => {
+  const c = state.clases.find(x => x.id === claseId);
+  openModal(claseFormHtml(c, true));
+};
+function claseFormHtml(c, isEdit){
+  return `
+  <form id="clase-form" class="p-5 flex flex-col gap-3" onsubmit="return submitClase(event, ${isEdit ? `'${c.id}'` : 'null'}, '${c.materiaId}')">
+    <div class="flex items-center justify-between mb-1">
+      <h3 class="font-display font-bold text-lg">${isEdit ? 'Editar clase' : 'Nueva clase'}</h3>
+      <button type="button" class="icon-btn" onclick="closeModal()">✕</button>
+    </div>
+    <div class="grid grid-cols-2 gap-3">
+      <div><label class="field-label">N° de clase</label><input class="input-field" type="number" name="numeroClase" value="${c?.numeroClase ?? ''}" required></div>
+      <div><label class="field-label">Fecha</label><input class="input-field" type="date" name="fecha" value="${c?.fecha ?? ''}"></div>
+    </div>
+    <div><label class="field-label">Tema</label><input class="input-field" type="text" name="tema" value="${esc(c?.tema ?? '')}" placeholder="Ej: Unidad 3 - Introducción"></div>
+    <div><label class="field-label">Link Read AI</label><input class="input-field" type="url" name="linkReadAI" value="${esc(c?.linkReadAI ?? '')}" placeholder="https://"></div>
+    <div><label class="field-label">Link clase grabada</label><input class="input-field" type="url" name="linkGrabacion" value="${esc(c?.linkGrabacion ?? '')}" placeholder="https://"></div>
+    <div><label class="field-label">Resumen</label><textarea class="input-field" name="resumen" rows="3" placeholder="Resumen breve de la clase...">${esc(c?.resumen ?? '')}</textarea></div>
+    <div><label class="field-label">Estado</label>
+      <select class="input-field" name="estado">${CLASE_ESTADOS.map(e => `<option value="${e}" ${e===c?.estado?'selected':''}>${e}</option>`).join('')}</select>
+    </div>
+    <div class="flex gap-2 mt-2">
+      <button type="submit" class="btn-primary flex-1">${isEdit ? 'Guardar cambios' : 'Agregar clase'}</button>
+      <button type="button" class="btn-ghost" onclick="closeModal()">Cancelar</button>
+    </div>
+  </form>`;
+}
+window.submitClase = async (e, claseId, materiaId) => {
+  e.preventDefault();
+  const fd = new FormData(e.target);
+  const data = {
+    materiaId,
+    numeroClase: Number(fd.get('numeroClase')) || 0,
+    fecha: fd.get('fecha') || '',
+    tema: fd.get('tema') || '',
+    linkReadAI: fd.get('linkReadAI') || '',
+    linkGrabacion: fd.get('linkGrabacion') || '',
+    resumen: fd.get('resumen') || '',
+    estado: fd.get('estado') || 'Pendiente'
+  };
+  if (claseId) await Backend.update('clases', claseId, data);
+  else await Backend.add('clases', { ...data, tareas: { verGrabacion:false, procesarReadAI:false, hacerTP:false } });
+  closeModal();
+  return false;
+};
+
+/* =========================================================================
+   ACTIONS: MATERIAS
+   ========================================================================= */
+window.openEditMateria = (materiaId) => {
+  const m = state.materias.find(x => x.id === materiaId);
+  openModal(`
+  <form class="p-5 flex flex-col gap-3" onsubmit="return submitMateria(event, '${materiaId}')">
+    <div class="flex items-center justify-between mb-1">
+      <h3 class="font-display font-bold text-lg">Editar materia</h3>
+      <button type="button" class="icon-btn" onclick="closeModal()">✕</button>
+    </div>
+    <div><label class="field-label">Nombre</label><input class="input-field" type="text" name="nombre" value="${esc(m.nombre)}" required></div>
+    <div class="grid grid-cols-2 gap-3">
+      <div><label class="field-label">Día</label>
+        <select class="input-field" name="dia">${DIAS.map(d => `<option value="${d}" ${d===m.dia?'selected':''}>${d}</option>`).join('')}</select>
+      </div>
+      <div><label class="field-label">Turno</label>
+        <select class="input-field" name="turno"><option value="1" ${m.turno==1?'selected':''}>1</option><option value="2" ${m.turno==2?'selected':''}>2</option></select>
+      </div>
+    </div>
+    <div><label class="field-label">URL del Campus</label><input class="input-field" type="url" name="campusUrl" value="${esc(m.campusUrl ?? '')}" placeholder="https://"></div>
+    <div><label class="field-label">Color</label><input class="input-field h-10 p-1" type="color" name="color" value="${m.color}"></div>
+    <div class="flex gap-2 mt-2">
+      <button type="submit" class="btn-primary flex-1">Guardar cambios</button>
+      <button type="button" class="btn-ghost" onclick="closeModal()">Cancelar</button>
+    </div>
+  </form>`);
+};
+window.submitMateria = async (e, materiaId) => {
+  e.preventDefault();
+  const fd = new FormData(e.target);
+  await Backend.update('materias', materiaId, {
+    nombre: fd.get('nombre'), dia: fd.get('dia'), turno: Number(fd.get('turno')),
+    campusUrl: fd.get('campusUrl') || '', color: fd.get('color')
+  });
+  closeModal();
+  return false;
+};
+
+/* =========================================================================
+   ACTIONS: FINALES
+   ========================================================================= */
+window.openAddFinal = () => openModal(finalFormHtml());
+window.openEditFinal = (finalId) => openModal(finalFormHtml(state.finales.find(x => x.id === finalId), true));
+function finalFormHtml(f, isEdit){
+  const colorDefault = f?.color || FINAL_COLORS[state.finales.length % FINAL_COLORS.length];
+  return `
+  <form class="p-5 flex flex-col gap-3" onsubmit="return submitFinal(event, ${isEdit ? `'${f.id}'` : 'null'})">
+    <div class="flex items-center justify-between mb-1">
+      <h3 class="font-display font-bold text-lg">${isEdit ? 'Editar final' : 'Nuevo final'}</h3>
+      <button type="button" class="icon-btn" onclick="closeModal()">✕</button>
+    </div>
+    <div><label class="field-label">Materia</label><input class="input-field" type="text" name="nombreMateria" value="${esc(f?.nombreMateria ?? '')}" required></div>
+    <div class="grid grid-cols-2 gap-3">
+      <div><label class="field-label">Fecha del examen</label><input class="input-field" type="date" name="fechaExamen" value="${f?.fechaExamen ?? ''}"></div>
+      <div><label class="field-label">Prioridad</label>
+        <select class="input-field" name="prioridad">${['Alta','Media','Baja'].map(p => `<option value="${p}" ${p===f?.prioridad?'selected':''}>${p}</option>`).join('')}</select>
+      </div>
+    </div>
+    <div><label class="field-label">Color</label><input class="input-field h-10 p-1" type="color" name="color" value="${colorDefault}"></div>
+    <div class="flex gap-2 mt-2">
+      <button type="submit" class="btn-primary flex-1">${isEdit ? 'Guardar cambios' : 'Agregar final'}</button>
+      <button type="button" class="btn-ghost" onclick="closeModal()">Cancelar</button>
+    </div>
+  </form>`;
+}
+window.submitFinal = async (e, finalId) => {
+  e.preventDefault();
+  const fd = new FormData(e.target);
+  const data = { nombreMateria: fd.get('nombreMateria'), fechaExamen: fd.get('fechaExamen') || '', prioridad: fd.get('prioridad'), color: fd.get('color') };
+  if (finalId) await Backend.update('finales', finalId, data);
+  else await Backend.add('finales', data);
+  closeModal();
+  return false;
+};
+window.confirmDeleteFinal = async (finalId) => {
+  if (confirm('¿Eliminar este final y todas sus unidades?')) {
+    await Backend.remove('finales', finalId);
+    const unidadesDelFinal = state.unidades.filter(u => u.finalId === finalId);
+    for (const u of unidadesDelFinal) await Backend.remove('unidades', u.id);
+  }
+};
+
+/* =========================================================================
+   ACTIONS: UNIDADES
+   ========================================================================= */
+window.openAddUnidad = (finalId) => {
+  const total = state.unidades.filter(u => u.finalId === finalId).length;
+  openModal(`
+  <form class="p-5 flex flex-col gap-3" onsubmit="return submitUnidad(event, '${finalId}')">
+    <div class="flex items-center justify-between mb-1">
+      <h3 class="font-display font-bold text-lg">Nueva unidad</h3>
+      <button type="button" class="icon-btn" onclick="closeModal()">✕</button>
+    </div>
+    <div><label class="field-label">N° de unidad</label><input class="input-field" type="number" name="unidadNumero" value="${total + 1}" required></div>
+    <div><label class="field-label">Título</label><input class="input-field" type="text" name="titulo" placeholder="Ej: Teoría de la firma" required></div>
+    <div class="flex gap-2 mt-2">
+      <button type="submit" class="btn-primary flex-1">Agregar unidad</button>
+      <button type="button" class="btn-ghost" onclick="closeModal()">Cancelar</button>
+    </div>
+  </form>`);
+};
+window.submitUnidad = async (e, finalId) => {
+  e.preventDefault();
+  const fd = new FormData(e.target);
+  await Backend.add('unidades', { finalId, unidadNumero: Number(fd.get('unidadNumero')) || 0, titulo: fd.get('titulo'), estado: 'Sin empezar' });
+  closeModal();
+  return false;
+};
+window.updateUnidadEstado = async (unidadId, estado) => { await Backend.update('unidades', unidadId, { estado }); };
+window.confirmDeleteUnidad = async (unidadId) => { if (confirm('¿Eliminar esta unidad?')) await Backend.remove('unidades', unidadId); };
+
+/* Initial render */
+render();
+</script>
+</body>
+</html>
